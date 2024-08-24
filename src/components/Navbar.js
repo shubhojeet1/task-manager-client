@@ -31,7 +31,7 @@ const Navbar = () => {
       </div>
       <ul className={`navbar-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         <li>
-          <Link to="/tasks" className="navbar-link">Tasks</Link>
+          <Link to="/tasks" className="navbar-link" onClick={handleMenuClose}>Tasks</Link>
         </li>
         {localStorage.getItem('token') ? (
           <li>
@@ -40,10 +40,10 @@ const Navbar = () => {
         ) : (
           <>
             <li>
-              <Link to="/login" className="navbar-link">Login</Link>
+              <Link to="/login" className="navbar-link" onClick={handleMenuClose}>Login</Link>
             </li>
             <li>
-              <Link to="/" className="navbar-link">Register</Link>
+              <Link to="/" className="navbar-link" onClick={handleMenuClose}>Register</Link>
             </li>
           </>
         )}
