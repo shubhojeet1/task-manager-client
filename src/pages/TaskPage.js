@@ -28,7 +28,7 @@ const TaskPage = () => {
 
     fetchTasks();
 
-    // Socket.io event listeners
+
     socket.on('taskAdded', (newTask) => {
       setTasks((prevTasks) => [...prevTasks, newTask]);
       showAlert('Task created successfully!', 'success');

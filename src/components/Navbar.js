@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import '../styles/Navbar.css'; 
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Navbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -10,23 +22,28 @@ const Navbar = () => {
   };
 
   return (
-    <nav>
-      <h2>Task Manager</h2>
-      <ul>
+    <nav className="navbar">
+      <div className="navbar-brand">
+        <h2>Task Manager</h2>
+        <button className="mobile-menu-icon" onClick={toggleMobileMenu}>
+          {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+        </button>
+      </div>
+      <ul className={`navbar-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         <li>
-          <Link to="/tasks">Tasks</Link>
+          <Link to="/tasks" className="navbar-link">Tasks</Link>
         </li>
         {localStorage.getItem('token') ? (
           <li>
-            <button onClick={logout}>Logout</button>
+            <button onClick={() => { logout(); handleMenuClose(); }} className="navbar-button">Logout</button>
           </li>
         ) : (
           <>
             <li>
-              <Link to="/login">Login</Link>
+              <Link to="/login" className="navbar-link">Login</Link>
             </li>
             <li>
-              <Link to="/">Register</Link>
+              <Link to="/" className="navbar-link">Register</Link>
             </li>
           </>
         )}

@@ -52,13 +52,36 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
   const filteredAndSortedTasks = sortTasks(filterTasks(tasks));
 
   return (
-    <Paper elevation={3} sx={{ p: 3, mt: 4, backgroundColor: '#f4f6f8', borderRadius: '12px' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5" component="h2">
+    <Paper
+      elevation={3}
+      sx={{
+        p: { xs: 2, md: 3 },
+        mt: 4,
+        backgroundColor: '#f4f6f8',
+        borderRadius: '12px',
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexDirection: { xs: 'column', md: 'row' },
+          mb: 2,
+        }}
+      >
+        <Typography variant="h5" component="h2" sx={{ mb: { xs: 2, md: 0 } }}>
           Task List
         </Typography>
-        <Box>
-          <FormControl variant="outlined" sx={{ mr: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            width: { xs: '100%', sm: 'auto' },
+            gap: 2,
+          }}
+        >
+          <FormControl variant="outlined" sx={{ width: { xs: '100%', sm: 'auto' } }}>
             <InputLabel>Filter by Status</InputLabel>
             <Select
               value={filterStatus}
@@ -71,7 +94,7 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
               <MenuItem value="completed">Completed</MenuItem>
             </Select>
           </FormControl>
-          <FormControl variant="outlined">
+          <FormControl variant="outlined" sx={{ width: { xs: '100%', sm: 'auto' } }}>
             <InputLabel>Sort by</InputLabel>
             <Select
               value={sortOption}
@@ -85,7 +108,15 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
         </Box>
       </Box>
       {filteredAndSortedTasks.map((task) => (
-        <Card key={task._id} variant="outlined" sx={{ mb: 2, boxShadow: 3, borderRadius: '12px' }}>
+        <Card
+          key={task._id}
+          variant="outlined"
+          sx={{
+            mb: 2,
+            boxShadow: 3,
+            borderRadius: '12px',
+          }}
+        >
           <CardContent>
             <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'bold' }}>
               {task.title}
@@ -111,13 +142,20 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
                 Due: {new Date(task.dueDate).toLocaleDateString()}
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+              }}
+            >
               <Button
                 variant="contained"
                 color="primary"
                 startIcon={<EditIcon />}
                 onClick={() => onEditTask(task)}
-                sx={{ borderRadius: '8px' }}
+                sx={{ borderRadius: '8px', width: { xs: '100%', sm: 'auto' } }}
               >
                 Edit
               </Button>
@@ -126,7 +164,7 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
                 color="secondary"
                 startIcon={<DeleteIcon />}
                 onClick={() => onDeleteTask(task._id)}
-                sx={{ borderRadius: '8px' }}
+                sx={{ borderRadius: '8px', width: { xs: '100%', sm: 'auto' } }}
               >
                 Delete
               </Button>

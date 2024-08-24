@@ -73,7 +73,6 @@ const LoginPage = () => {
       }, 1000);
     } catch (err) {
       if (err.response && err.response.status === 429) {
-        // Handle rate limit exceeded error
         const retryAfterSeconds = parseInt(err.response.data.retryAfter, 10);
         const retryAfterDate = new Date(Date.now() + retryAfterSeconds * 1000).getTime();
 
