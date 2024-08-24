@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import {
-  getTasks,
-  updateTask,
-  deleteTask,
-} from '../services/taskService';
+import { getTasks, updateTask, deleteTask } from '../services/taskService';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
 import { Container, Box, Typography, Snackbar, Alert, Paper } from '@mui/material';
+import AddTaskIcon from '@mui/icons-material/AddTask';
 
 const socket = io('https://tash-manager-server-mu.vercel.app');
 
@@ -25,9 +22,7 @@ const TaskPage = () => {
         const res = await getTasks();
         setTasks(res.data);
       } catch (err) {
-        setServerError(
-          err.response?.data?.msg || 'Failed to load tasks. Please try again.'
-        );
+        setServerError(err.response?.data?.msg || 'Failed to load tasks. Please try again.');
       }
     };
 
@@ -108,10 +103,13 @@ const TaskPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Task Manager
-        </Typography>
+      <Paper elevation={3} sx={{ p: 4, backgroundColor: '#f7f9fc', borderRadius: '12px' }}>
+        <Box display="flex" alignItems="center" justifyContent="center" sx={{ mb: 4 }}>
+          <AddTaskIcon sx={{ fontSize: 40, mr: 2, color: '#1976d2' }} />
+          <Typography variant="h4" component="h1" align="center" color="primary.dark">
+            Task Manager
+          </Typography>
+        </Box>
         {serverError && (
           <Box mb={2}>
             <Alert severity="error">{serverError}</Alert>

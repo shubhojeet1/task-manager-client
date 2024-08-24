@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
 import { Formik, Form } from 'formik';
@@ -13,13 +13,42 @@ import {
   CircularProgress,
   Snackbar,
   Paper,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [retryAfter, setRetryAfter] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    if (retryAfter) {
+      timer = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = retryAfter - now;
+
+        if (distance < 0) {
+          clearInterval(timer);
+          setTimeLeft(null);
+          setRetryAfter(null);
+        } else {
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          setTimeLeft(`${minutes}m ${seconds}s`);
+        }
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [retryAfter]);
 
   // Validation schema using Yup
   const validationSchema = Yup.object({
@@ -37,17 +66,26 @@ const LoginPage = () => {
     try {
       const res = await login(values);
       localStorage.setItem('token', res.data.token);
-      setOpenSnackbar(true); // Open success snackbar
+      setOpenSnackbar(true);
 
       setTimeout(() => {
-        navigate('/tasks'); // Navigate to tasks after 1 second
-      }, 1000); // 1-second delay
+        navigate('/tasks');
+      }, 1000);
     } catch (err) {
-      setServerError(
-        err.response && err.response.data && err.response.data.msg
-          ? err.response.data.msg
-          : 'Incorrect email or password. Please try again.'
-      );
+      if (err.response && err.response.status === 429) {
+        // Handle rate limit exceeded error
+        const retryAfterSeconds = parseInt(err.response.data.retryAfter, 10);
+        const retryAfterDate = new Date(Date.now() + retryAfterSeconds * 1000).getTime();
+
+        setRetryAfter(retryAfterDate);
+        setServerError('Too many login attempts. Please try again after:');
+      } else {
+        setServerError(
+          err.response && err.response.data && err.response.data.msg
+            ? err.response.data.msg
+            : 'Incorrect email or password. Please try again.'
+        );
+      }
     }
     setLoading(false);
     setSubmitting(false);
@@ -55,6 +93,10 @@ const LoginPage = () => {
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
@@ -66,7 +108,10 @@ const LoginPage = () => {
           </Typography>
           {serverError && (
             <Box mb={2}>
-              <Alert severity="error">{serverError}</Alert>
+              <Alert severity="error">
+                {serverError}
+                {timeLeft && <Typography variant="h6">{timeLeft}</Typography>}
+              </Alert>
             </Box>
           )}
           <Formik
@@ -94,13 +139,26 @@ const LoginPage = () => {
                     fullWidth
                     variant="outlined"
                     label="Password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     error={touched.password && Boolean(errors.password)}
                     helperText={touched.password && errors.password ? 'Incorrect password' : ''}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Box>
                 <Box mb={2}>
@@ -109,7 +167,7 @@ const LoginPage = () => {
                     variant="contained"
                     color="primary"
                     fullWidth
-                    disabled={isSubmitting || loading}
+                    disabled={isSubmitting || loading || retryAfter}
                     startIcon={loading ? <CircularProgress size="1rem" /> : null}
                   >
                     {loading ? 'Logging in...' : 'Login'}
@@ -122,7 +180,7 @@ const LoginPage = () => {
       </Box>
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={1000} // Hide after 1 second
+        autoHideDuration={1000}
         onClose={handleCloseSnackbar}
       >
         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -11,27 +11,89 @@ import {
   InputLabel,
   Paper,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EventIcon from '@mui/icons-material/Event';
 
 const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [sortOption, setSortOption] = useState('dueDate');
+
   const handleStatusChange = (taskId, newStatus) => {
     onUpdateTaskStatus(taskId, newStatus);
   };
 
+  const handleFilterChange = (event) => {
+    setFilterStatus(event.target.value);
+  };
+
+  const handleSortChange = (event) => {
+    setSortOption(event.target.value);
+  };
+
+  const filterTasks = (tasks) => {
+    return tasks.filter((task) => {
+      if (filterStatus === 'all') return true;
+      return task.status === filterStatus;
+    });
+  };
+
+  const sortTasks = (tasks) => {
+    return [...tasks].sort((a, b) => {
+      if (sortOption === 'dueDate') {
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      } else if (sortOption === 'title') {
+        return a.title.localeCompare(b.title);
+      }
+      return 0;
+    });
+  };
+
+  const filteredAndSortedTasks = sortTasks(filterTasks(tasks));
+
   return (
-    <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Task List
-      </Typography>
-      {tasks.map((task) => (
-        <Card key={task._id} variant="outlined" sx={{ mb: 2, boxShadow: 3 }}>
+    <Paper elevation={3} sx={{ p: 3, mt: 4, backgroundColor: '#f4f6f8', borderRadius: '12px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h5" component="h2">
+          Task List
+        </Typography>
+        <Box>
+          <FormControl variant="outlined" sx={{ mr: 2 }}>
+            <InputLabel>Filter by Status</InputLabel>
+            <Select
+              value={filterStatus}
+              onChange={handleFilterChange}
+              label="Filter by Status"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="pending">Pending</MenuItem>
+              <MenuItem value="in-progress">In-Progress</MenuItem>
+              <MenuItem value="completed">Completed</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl variant="outlined">
+            <InputLabel>Sort by</InputLabel>
+            <Select
+              value={sortOption}
+              onChange={handleSortChange}
+              label="Sort by"
+            >
+              <MenuItem value="dueDate">Due Date</MenuItem>
+              <MenuItem value="title">Title</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
+      {filteredAndSortedTasks.map((task) => (
+        <Card key={task._id} variant="outlined" sx={{ mb: 2, boxShadow: 3, borderRadius: '12px' }}>
           <CardContent>
-            <Typography variant="h6" component="h3">
+            <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'bold' }}>
               {task.title}
             </Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
               {task.description || 'No description provided.'}
             </Typography>
-            <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+            <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
               <InputLabel>Status</InputLabel>
               <Select
                 label="Status"
@@ -43,21 +105,28 @@ const TaskList = ({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) => {
                 <MenuItem value="completed">Completed</MenuItem>
               </Select>
             </FormControl>
-            <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-              Due: {new Date(task.dueDate).toLocaleDateString()}
-            </Typography>
-            <Box mt={2} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+              <EventIcon sx={{ mr: 1, color: 'gray' }} />
+              <Typography variant="body2" color="textSecondary">
+                Due: {new Date(task.dueDate).toLocaleDateString()}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button
-                variant="outlined"
+                variant="contained"
                 color="primary"
+                startIcon={<EditIcon />}
                 onClick={() => onEditTask(task)}
+                sx={{ borderRadius: '8px' }}
               >
                 Edit
               </Button>
               <Button
-                variant="outlined"
+                variant="contained"
                 color="secondary"
+                startIcon={<DeleteIcon />}
                 onClick={() => onDeleteTask(task._id)}
+                sx={{ borderRadius: '8px' }}
               >
                 Delete
               </Button>
