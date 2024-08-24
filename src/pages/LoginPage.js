@@ -50,7 +50,7 @@ const LoginPage = () => {
     return () => clearInterval(timer);
   }, [retryAfter]);
 
-  // Validation schema using Yup
+
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Invalid email address')
@@ -59,7 +59,7 @@ const LoginPage = () => {
       .required('Password is required'),
   });
 
-  // Handle form submission
+
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true);
     setServerError('');

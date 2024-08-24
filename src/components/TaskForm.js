@@ -25,6 +25,7 @@ const TaskForm = ({
     } else {
       clearForm();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskToEdit]);
 
   const handleSubmit = async (e) => {

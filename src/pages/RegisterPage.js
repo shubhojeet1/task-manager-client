@@ -62,7 +62,7 @@ const RegisterPage = () => {
 
   const handleSnackbarClose = () => {
     setSuccessMessage(false);
-    navigate('/tasks'); // Redirect after closing the Snackbar
+    navigate('/tasks'); 
   };
 
   return (
