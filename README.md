@@ -23,6 +23,9 @@ This is the Client for the Task Manager application, built with Reactjs, Materia
 
    npm start
 
+## Testing 
+
 5. For Testing 
-   npm test   
+
+ -  npm test   
 
