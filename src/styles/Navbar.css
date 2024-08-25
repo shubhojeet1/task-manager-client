@@ -1,4 +1,3 @@
-/* General Navbar Styling */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -69,7 +68,7 @@
   background-color: #c0392b;
 }
 
-/* Responsive Styling */
+
 @media (max-width: 768px) {
   .mobile-menu-icon {
     display: block;
@@ -96,7 +95,7 @@
   .navbar-link {
     text-align: center;
     padding: 8px 0;
-    width: 100%; /* Ensure full-width clickable area */
+    width: 100%; 
   }
 
   .navbar-button {
